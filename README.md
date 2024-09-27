@@ -43,3 +43,32 @@ Writing input list to file  OHM_192.168.2.100_input_list.txt
 85. SUGO9 z390 plyta Voltages Voltage #6
 ```
 program shows list and write it to file configured for next steps.
+Contents of example OHM_192.168.2.100_input_list.txt:
+
+```
+        blacklist_content = [
+        'SUGO9 NVMe 1 Load Used Space',
+        'SUGO9 NVMe 2 Load Used Space',
+        'SUGO9 z390 plyta Voltages Voltage #6'
+        ]
+```
+After collecting these files for every OHM instance you want to filter
+you need to join them and edit to leave only lines wchich you want to filter out, to not collect its data.
+
+
+Next you need to find your openhardwaremonitor sensor.py,
+mine was at this path:
+```
+/var/lib/docker/overlay2/09090e774b30a3f259b562a510059e5095d1837fb9aed05c8ca16edbcffd4912/merged/usr/src/homeassistant/homeassistant/components/openhardwaremonitor/sensor.py
+```
+because I have old HA version, for long time not upgraded, I will show what I changed.
+At the end of file I have such code:
+```python
+        fullname = " ".join(child_names)
+
+        dev = OpenHardwareMonitorDevice(self, fullname, path, unit_of_measurement)
+
+        result.append(dev)
+        return result
+```
+
