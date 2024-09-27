@@ -8,14 +8,14 @@ I was looking for some method to be ablle to filter what I want to be logged and
 
 I start to try make it myself, 
 
-0
+# 0
 At first, there was a very ambitious plan to colect and manage configuration from within the program using configuration.yaml,
 made two additional boolin flags and start to program gathering OHM inpout data to files,
 than user shopuld find the files, edit them to make blacklist file, and than set in configuration flag to use blacklist.
 But I failed, I was unable to find place in my configuration to write a file from "sensor.py", the file is in the docker and I was unable to write anything to file system.
 So folder "0 unable to write file" is a "work in progress" of the idea.
 
-1
+# 1
 Second is gathering OHM ouput data manually and than making blacklist and put in in the code of OHM component script.
 This version is in folder "1 change and configure in sensor script".
 
@@ -24,7 +24,7 @@ I get openhardwaremonitor sensor.py edited to make just this,
 https://github.com/home-assistant/core/blob/dev/homeassistant/components/openhardwaremonitor/sensor.py
 file name is get_ohm_data.py and you can call it with hostname and service port (default 8085)
 ```
-get_ohm_data.py 192.168.2.100
+c:\get_ohm_data.py 192.168.2.100
 Writing input list to file  OHM_192.168.2.100_input_list.txt
 1. SUGO9 NVMe 1 Load Used Space
 2. SUGO9 NVMe 2 Load Used Space
@@ -71,4 +71,71 @@ At the end of file I have such code:
         result.append(dev)
         return result
 ```
+
+And now i change it to
+```python
+        blacklist_content = [
+        ]
+
+        if fullname not in blacklist_content:
+            dev = OpenHardwareMonitorDevice(self, fullname, path, unit_of_measurement)
+            result.append(dev)
+        else:
+            _LOGGER.info("Eliminate OHW %s from logging", fullname)
+
+        return result
+```
+changing blacklist_content = [] to prepared black list
+
+```python
+        blacklist_content = [
+        'SUGO9 NVMe 1 Load Used Space',
+        'SUGO9 NVMe 2 Load Used Space',
+        'SUGO9 z390 plyta Voltages Voltage #6'
+        ]
+
+        if fullname not in blacklist_content:
+            dev = OpenHardwareMonitorDevice(self, fullname, path, unit_of_measurement)
+            result.append(dev)
+        else:
+            _LOGGER.info("Eliminate OHW %s from logging", fullname)
+
+        return result
+```
+
+After edit you save, restart Homeassistant and filtering should work, 
+you can check it on overview, find the names of filtered objects and check how long ago new data arrived, 
+for not filtered items it should come new data every minute
+for blacklisted it should get older and older.
+
+Other way to observe if changes work is changing logging in configuration.yaml to 
+```
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+logger:
+  default: warning
+  logs:
+    homeassistant.components.openhardwaremonitor: info
+```
+and after restart you should found in logs such info:
+```
+2024-09-27 14:52:06.175 INFO (SyncWorker_2) [homeassistant.components.openhardwaremonitor.sensor] Eliminate OHW SUGO9 i9-9900K Clocks CPU Core #2 from logging
+2024-09-27 14:52:06.176 INFO (SyncWorker_2) [homeassistant.components.openhardwaremonitor.sensor] Eliminate OHW SUGO9 i9-9900K Clocks CPU Core #3 from logging
+2024-09-27 14:52:09.461 WARNING (MainThread) [homeassistant.components.sensor] Platform openhardwaremonitor not ready yet: None; Retrying in background in 30 seconds
+```
+
+# 2
+I don't like confoguration of blacklist is in script file
+I was looking for way to store it and make accesible in configuration.yaml
+It was for me hard to understend how info from the file is transfered to the program, but with tries and errors,
+with looking for other code, I managed, it is not rock solid, I got some errors from time to time, but I decided to share final version.
+
+You still need to collect OHM info.
+
+By the way, 
+I think all this workaround is stupid, 
+there should be another checkbox in OHM if the data should be transfered to webserver, as it is checkbox to making graphs.
+And there is still problerm, new data is not collected, but how to easy get rid of old data and remove old names form Home assistant?
+
 
