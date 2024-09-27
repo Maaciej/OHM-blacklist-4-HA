@@ -6,7 +6,8 @@ Data of these measurements takes space logged every minute.
 
 I was looking for some method to be ablle to filter what I want to be logged and way to get rid of unnecesary data, not found.
 
-I start to try make it myself, 
+I start to try make it myself.
+**Test at your own risk.**
 
 # 0
 At first, there was a very ambitious plan to colect and manage configuration from within the program using configuration.yaml,
@@ -133,11 +134,11 @@ with looking for other code, I managed,
 it is not rock solid, I got some errors from time to time, but I decided to share.
 **Implementing this version and previous "1" version anyway is all your responsibility.**
 
-_
-By the way, 
+
+_By the way, _
 I think all this workaround is stupid, 
-there should be another checkbox in OHM if the data should be transfered to webserver, as it is checkbox to making graphs.
-And there is still problerm, new data is not collected, but how to easy get rid of old data and remove old names form Home assistant?_
+_there should be another checkbox in OHM if the data should be transfered to webserver, as it is checkbox to making graphs._
+_And there is still problerm, new data is not collected, but how to easy get rid of old data and remove old names form Home assistant?_
 
 Next you need to find your openhardwaremonitor sensor.py,
 mine was at this path:
