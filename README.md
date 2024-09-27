@@ -7,6 +7,7 @@ Data of these measurements takes space logged every minute.
 I was looking for some method to be ablle to filter what I want to be logged and way to get rid of unnecesary data, not found.
 
 I start to try make it myself.
+
 **Test at your own risk.**
 
 # 0
